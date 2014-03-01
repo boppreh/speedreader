@@ -10,7 +10,6 @@
     background: white;
     width: 200px;
     height: 1.5em;
-    margin: 200px auto;
     font: 22px Tahoma;
     text-align: center;
 }
@@ -26,10 +25,19 @@
     width: 100px;
     margin-left: 5%;
 }
+
+#controls {
+    width: 200px;
+    margin: 50px auto 10px auto;
+}
         </style>
     </head>
     <body style='background: black;'>
-        <div id="text-display"></div>
+        <div id="controls">
+            <div id="text-display"></div>
+            <button id="start-button" onclick="displayer.start()" disabled="true">Start</button>
+            <button id="pause-continue-button" onclick="displayer.pauseContinue()" disabled="true">Continue</button>
+        </div>
 
         <textarea id="text-input">
 Visit Angkor Wat
@@ -46,70 +54,102 @@ Getting a visa
 
 Visas are required to enter Cambodia. You can obtain one on arrival at Siem Reap International Airport for $20, and 1 passport photo is required per person. You will also need another passport photo for the Angkor Temple Entrance Pass. Please ensure you take comfortable walking shoes, light clothing and plenty of water to drink as it is very hot there. The most commonly accepted currency in Cambodia is the US dollar.
         </textarea>
-        <button id="submit-button" onclick="buttonSubmit()">Start reading</button>
-        <button id="stop-button" onclick="stopReading()" disabled="true">Stop</button>
-        <button id="continue-button" onclick="continueReading()" disabled="true">Continue</button>
+        <button id="load-button" onclick="loadText()">Load text</button>
 
         <script>
 
-var currentTimeoutId = 0,
-    nextCall = null;
+var displayer = (function () {
+    var currentTimeoutId = 0,
+        nextCall = null,
+        currentPairs = [];
 
-function display(text) {
-    console.log("Displaying:", text);
-    document.getElementById("text-display").innerHTML = text;
-}
-
-function displaySerial(wordDelayPairs) {
-    if (wordDelayPairs.length === 0) {
-        nextCall = null;
-        display("&nbsp;");
-        return;
-    } else if (wordDelayPairs.length === 1) {
-        nextCall = null;
-    } else {
-        nextCall = function () { displaySerial(wordDelayPairs); };
+    function display(text) {
+        console.log("Displaying:", text);
+        document.getElementById("text-display").innerHTML = text;
     }
 
-    var pair = wordDelayPairs.shift();
-        word = pair[0],
-        delay = pair[1];
+    function displaySerial(wordDelayPairs) {
+        if (wordDelayPairs.length === 0) {
+            nextCall = null;
+            display("&nbsp;");
+            return;
+        } else if (wordDelayPairs.length === 1) {
+            nextCall = null;
+        } else {
+            nextCall = function () { displaySerial(wordDelayPairs); };
+        }
 
-    display(word);
-    continueReading();
-}
+        var pair = wordDelayPairs.shift();
+            word = pair[0],
+            delay = pair[1];
 
-function buttonSubmit() {
+        display(word);
+        continueReading();
+    }
+
+    function updateButtons() {
+        var startButton = document.getElementById("start-button"),
+            continueButton = document.getElementById("pause-continue-button");
+
+        startButton.disabled = currentPairs.length === 0;
+        continueButton.disabled = currentPairs.length === 0;
+        continueButton.innerText = isPlaying() ? "Pause" : "Continue";
+    }
+
+    function startReading() {
+        displaySerial(currentPairs);
+        updateButtons();
+    }
+
+    function stopReading() {
+        clearTimeout(currentTimeoutId);
+        currentTimeoutId = 0;
+        updateButtons();
+    }
+
+    function continueReading() {
+        currentTimeoutId = setTimeout(nextCall, delay);
+        updateButtons();
+    }
+
+    function isPlaying() {
+        return currentTimeoutId !== 0;
+    }
+
+    function read(wordDelayPairs) {
+        stopReading();
+        currentPairs = wordDelayPairs;
+        display(currentPairs[0][0]);
+        updateButtons();
+    }
+
+    return {read: read,
+            start: startReading,
+            isPlaying: isPlaying,
+            pauseContinue: function () {
+                if (isPlaying()) {
+                    stopReading();
+                } else {
+                    continueReading();
+                }
+            },
+    };
+}());
+
+function loadText() {
     var pairs = [] 
         words = document.getElementById("text-input").value.split(" ");
 
     for (var i in words) {
         var word = words[i],
-            delay = 1000;
+            delay = 150;
 
         if (word != "") {
             pairs.push([word, delay]);
         }
     }
 
-    stopReading();
-    displaySerial(pairs);
-}
-
-function stopReading() {
-    console.log(currentTimeoutId);
-    clearTimeout(currentTimeoutId);
-    currentTimeoutId = 0;
-    document.getElementById("stop-button").disabled = true;
-
-    var hasNext = nextCall !== null;
-    document.getElementById("continue-button").disabled = !hasNext;
-}
-
-function continueReading() {
-    currentTimeoutId = setTimeout(nextCall, delay);
-    document.getElementById("stop-button").disabled = false;
-    document.getElementById("continue-button").disabled = true;
+    displayer.read(pairs);
 }
         </script>
     </body>
