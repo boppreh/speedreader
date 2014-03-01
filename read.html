@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -5,42 +6,111 @@
     <head>
         <title>Read</title>
         <style media="screen" type="text/css">
-#text-field {
+#text-display {
     background: white;
     width: 200px;
+    height: 1.5em;
     margin: 200px auto;
     font: 22px Tahoma;
     text-align: center;
 }
+
+#text-input {
+    background: white;
+    margin: 5%;
+    width: 90%;
+    height: 320px;
+}
+
+#submit-button {
+    width: 100px;
+    margin-left: 5%;
+}
         </style>
     </head>
-
     <body style='background: black;'>
-        <div id="text-field">Words</div>
+        <div id="text-display"></div>
+
+        <textarea id="text-input">
+Visit Angkor Wat
+
+Siem Reap is a small town near the world famous temple of Angkor Wat. The town is charming and worth exploring, with some fine examples of Khmer and French colonial architecture set among the more modern developments. Nowadays, visitors are flocking in, using it as a base for visits to the nearby temples.
+
+A Carved City
+
+From the 9th to the 14th centuries, when Europe was still struggling out of the Dark Ages, the Cambodian Empire of Angkor covered most of present-day Cambodia, Laos, Vietnam, and Thailand. The heart of this empire during the 12th century was the ancient capital of Angkor Thom, near present day Siem Reap, the site of the world’s largest temple complexes, which were rediscovered in 1861.This spectacular city was built over 30 years under the reign of King Suryavarman II (1113-1150). The area covers about 400 square kilometres and is full of the finest examples of Khmer art and architecture. Tourists are always amazed at the scale of the place.
+
+In Angkor Wat you will find more than 100 stone monuments and temple buildings, each of which contains countless statues, sculptures and reliefs that have weathered extremely little over the last 800 years. To see the whole thing can take several days. The most important temples to visit in the area are Angkor Wat, especially at sunrise or sunset; Angkor Thom, the remains of the capital; Ta Prohm, a palace overgrown by jungle; and Bayon.
+
+Getting a visa
+
+Visas are required to enter Cambodia. You can obtain one on arrival at Siem Reap International Airport for $20, and 1 passport photo is required per person. You will also need another passport photo for the Angkor Temple Entrance Pass. Please ensure you take comfortable walking shoes, light clothing and plenty of water to drink as it is very hot there. The most commonly accepted currency in Cambodia is the US dollar.
+        </textarea>
+        <button id="submit-button" onclick="buttonSubmit()">Start reading</button>
+        <button id="stop-button" onclick="stopReading()" disabled="true">Stop</button>
+        <button id="continue-button" onclick="continueReading()" disabled="true">Continue</button>
 
         <script>
+
+var currentTimeoutId = 0,
+    nextCall = null;
+
 function display(text) {
-    document.getElementById("text-field").innerHTML = text;
+    console.log("Displaying:", text);
+    document.getElementById("text-display").innerHTML = text;
 }
 
 function displaySerial(wordDelayPairs) {
     if (wordDelayPairs.length === 0) {
-        display(' ');
+        nextCall = null;
+        display("&nbsp;");
         return;
+    } else if (wordDelayPairs.length === 1) {
+        nextCall = null;
+    } else {
+        nextCall = function () { displaySerial(wordDelayPairs); };
     }
 
     var pair = wordDelayPairs.shift();
         word = pair[0],
         delay = pair[1];
-    console.log(pair);
 
     display(word);
-
-    setInterval(function () { displaySerial(wordDelayPairs); }, delay);
+    continueReading();
 }
 
-display('Other words');
-displaySerial([['Word 1', 1000], ['Word 2', 500], ['Word 3', 200]])
+function buttonSubmit() {
+    var pairs = [] 
+        words = document.getElementById("text-input").value.split(" ");
+
+    for (var i in words) {
+        var word = words[i],
+            delay = 1000;
+
+        if (word != "") {
+            pairs.push([word, delay]);
+        }
+    }
+
+    stopReading();
+    displaySerial(pairs);
+}
+
+function stopReading() {
+    console.log(currentTimeoutId);
+    clearTimeout(currentTimeoutId);
+    currentTimeoutId = 0;
+    document.getElementById("stop-button").disabled = true;
+
+    var hasNext = nextCall !== null;
+    document.getElementById("continue-button").disabled = !hasNext;
+}
+
+function continueReading() {
+    currentTimeoutId = setTimeout(nextCall, delay);
+    document.getElementById("stop-button").disabled = false;
+    document.getElementById("continue-button").disabled = true;
+}
         </script>
     </body>
 </html>
