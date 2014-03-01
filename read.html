@@ -5,7 +5,7 @@
     <head>
         <title>Read</title>
         <style media="screen" type="text/css">
-#text {
+#text-field {
     background: white;
     width: 200px;
     margin: 200px auto;
@@ -16,10 +16,31 @@
     </head>
 
     <body style='background: black;'>
-        <div id="text">Words</div>
+        <div id="text-field">Words</div>
 
         <script>
-//alert('Test');
+function display(text) {
+    document.getElementById("text-field").innerHTML = text;
+}
+
+function displaySerial(wordDelayPairs) {
+    if (wordDelayPairs.length === 0) {
+        display(' ');
+        return;
+    }
+
+    var pair = wordDelayPairs.shift();
+        word = pair[0],
+        delay = pair[1];
+    console.log(pair);
+
+    display(word);
+
+    setInterval(function () { displaySerial(wordDelayPairs); }, delay);
+}
+
+display('Other words');
+displaySerial([['Word 1', 1000], ['Word 2', 500], ['Word 3', 200]])
         </script>
     </body>
 </html>
