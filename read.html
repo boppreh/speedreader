@@ -60,7 +60,7 @@ Visas are required to enter Cambodia. You can obtain one on arrival at Siem Reap
 
 var displayer = (function () {
     var currentTimeoutId = 0,
-        nextCall = null,
+        currentIndex = 0,
         currentPairs = [];
 
     function display(text) {
@@ -68,23 +68,18 @@ var displayer = (function () {
         document.getElementById("text-display").innerHTML = text;
     }
 
-    function displaySerial(wordDelayPairs) {
-        if (wordDelayPairs.length === 0) {
-            nextCall = null;
+    function displayNext() {
+        if (currentIndex >= currentPairs.length) {
             display("&nbsp;");
             return;
-        } else if (wordDelayPairs.length === 1) {
-            nextCall = null;
-        } else {
-            nextCall = function () { displaySerial(wordDelayPairs); };
         }
 
-        var pair = wordDelayPairs.shift();
-            word = pair[0],
-            delay = pair[1];
+        var word = currentPairs[currentIndex][0],
+            delay = currentPairs[currentIndex][1];
 
         display(word);
-        continueReading();
+        currentTimeoutId = setTimeout(displayNext, delay);
+        currentIndex += 1;
     }
 
     function updateButtons() {
@@ -97,7 +92,9 @@ var displayer = (function () {
     }
 
     function startReading() {
-        displaySerial(currentPairs);
+        stopReading();
+        currentIndex = 0;
+        displayNext();
         updateButtons();
     }
 
@@ -108,7 +105,7 @@ var displayer = (function () {
     }
 
     function continueReading() {
-        currentTimeoutId = setTimeout(nextCall, delay);
+        displayNext();
         updateButtons();
     }
 
