@@ -134,7 +134,7 @@ var displayer = (function () {
 
 function loadText() {
     var pairs = [] 
-        words = document.getElementById("text-input").value.split(" ");
+        words = document.getElementById("text-input").value.split(/\s/);
 
     for (var i in words) {
         var word = words[i],
