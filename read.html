@@ -68,18 +68,31 @@ var displayer = (function () {
         document.getElementById("text-display").innerHTML = text;
     }
 
+    function displayCurrent() {
+        display(currentPairs[currentIndex][0]);
+        updateButtons();
+    }
+
     function displayNext() {
+        currentIndex += 1;
+
         if (currentIndex >= currentPairs.length) {
             display("&nbsp;");
-            return;
+        } else {
+            displayCurrent();
         }
+    }
 
-        var word = currentPairs[currentIndex][0],
-            delay = currentPairs[currentIndex][1];
+    function play() {
+        stop();
+        currentTimeoutId = setTimeout(play, currentPairs[currentIndex][1]);
+        displayNext();
+    }
 
-        display(word);
-        currentTimeoutId = setTimeout(displayNext, delay);
-        currentIndex += 1;
+    function stop() {
+        clearTimeout(currentTimeoutId);
+        currentTimeoutId = 0;
+        updateButtons();
     }
 
     function updateButtons() {
@@ -87,26 +100,13 @@ var displayer = (function () {
             continueButton = document.getElementById("pause-continue-button");
 
         startButton.disabled = currentPairs.length === 0;
-        continueButton.disabled = currentPairs.length === 0;
+        continueButton.disabled = currentPairs.length === 0 || currentIndex === 0;
         continueButton.innerText = isPlaying() ? "Pause" : "Continue";
     }
 
     function startReading() {
-        stopReading();
         currentIndex = 0;
-        displayNext();
-        updateButtons();
-    }
-
-    function stopReading() {
-        clearTimeout(currentTimeoutId);
-        currentTimeoutId = 0;
-        updateButtons();
-    }
-
-    function continueReading() {
-        displayNext();
-        updateButtons();
+        play();
     }
 
     function isPlaying() {
@@ -114,10 +114,9 @@ var displayer = (function () {
     }
 
     function read(wordDelayPairs) {
-        stopReading();
         currentPairs = wordDelayPairs;
-        display(currentPairs[0][0]);
-        updateButtons();
+        stop();
+        displayCurrent();
     }
 
     return {read: read,
@@ -125,9 +124,9 @@ var displayer = (function () {
             isPlaying: isPlaying,
             pauseContinue: function () {
                 if (isPlaying()) {
-                    stopReading();
+                    stop();
                 } else {
-                    continueReading();
+                    play();
                 }
             },
     };
