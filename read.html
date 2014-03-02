@@ -14,11 +14,16 @@
     text-align: center;
 }
 
-#text-input {
-    background: white;
+#config {
     margin: 5% 5% 0% 5%;
     width: 90%;
+}
+
+#text-input {
+    background: white;
+    width: 100%;
     height: 320px;
+    display: block;
 }
 
 #load-button {
@@ -39,7 +44,8 @@
             <button id="pause-continue-button" onclick="displayer.pauseContinue()" disabled="true">Continue</button>
         </div>
 
-        <textarea id="text-input">
+        <div id="config">
+            <textarea id="text-input">
 Visit Angkor Wat
 
 Siem Reap is a small town near the world famous temple of Angkor Wat. The town is charming and worth exploring, with some fine examples of Khmer and French colonial architecture set among the more modern developments. Nowadays, visitors are flocking in, using it as a base for visits to the nearby temples.
@@ -53,8 +59,10 @@ In Angkor Wat you will find more than 100 stone monuments and temple buildings, 
 Getting a visa
 
 Visas are required to enter Cambodia. You can obtain one on arrival at Siem Reap International Airport for $20, and 1 passport photo is required per person. You will also need another passport photo for the Angkor Temple Entrance Pass. Please ensure you take comfortable walking shoes, light clothing and plenty of water to drink as it is very hot there. The most commonly accepted currency in Cambodia is the US dollar.
-        </textarea>
-        <button id="load-button" onclick="loadText()">Load text</button>
+            </textarea>
+            <input type="range" name="points" min="1" max="10">
+            <button id="load-button" onclick="loadText()">Load text</button>
+        </div>
 
         <script>
 
