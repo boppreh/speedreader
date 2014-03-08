@@ -44,6 +44,10 @@ function createDisplayHandler(displayElement, progressElement) {
     }
 
     function play() {
+        if (pos === timedSegments.length - 1) {
+            return;
+        }
+
         pos++;
         update();
 
