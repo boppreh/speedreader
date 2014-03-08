@@ -99,13 +99,14 @@ displayElement.onclick = function () {
 }
 
 function loadText() {
+    defaultDelay = 60 * 1000 / speedInputElement.value;
+
     var fullText = textInputElement.value,
         segments = extractSegments(fullText),
         timedSegments = calculateDelays(segments);
 
     display.stop();
     display.load(timedSegments);
-    defaultDelay = 60 * 1000 / speedInputElement.value;
 }
 
 function extractSegments(text) {
