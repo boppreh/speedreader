@@ -44,11 +44,14 @@ function createDisplayHandler(element) {
     };
 };
 
-var DEFAULT_DELAY = 200;
-
 var displayElement = document.getElementById("text-display"),
-    textInputElement = document.getElementById("text-input"),
-    display = createDisplayHandler(displayElement);
+    speedInputElement = document.getElementById("speed-input");
+
+var textInputElement = document.getElementById("text-input"),
+    display = createDisplayHandler(displayElement),
+    defaultDelay = 200;
+
+speedInputElement.value = 60 * 1000 / defaultDelay;
 
 displayElement.onclick = function () {
     if (display.isPlaying()) {
@@ -64,6 +67,8 @@ function loadText() {
         timedSegments = calculateDelays(segments);
 
     display.load(timedSegments);
+    defaultDelay = 60 * 1000 / speedInputElement.value;
+    console.log(defaultDelay);
 }
 
 function extractSegments(text) {
@@ -94,7 +99,7 @@ function calculateDelays(segments) {
 
         }
 
-        var delay = DEFAULT_DELAY * delayMultiplier;
+        var delay = defaultDelay * delayMultiplier;
         timedSegments.push([delay, segment]);
     }
     return timedSegments;
