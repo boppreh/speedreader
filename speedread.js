@@ -42,7 +42,7 @@ function createDisplayHandler(element) {
             return timeoutId != 0;
         },
     };
-}());
+};
 
 var displayElement = document.getElementById("text-display"),
     textInputElement = document.getElementById("text-input"),
