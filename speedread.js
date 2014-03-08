@@ -68,7 +68,6 @@ function loadText() {
 
     display.load(timedSegments);
     defaultDelay = 60 * 1000 / speedInputElement.value;
-    console.log(defaultDelay);
 }
 
 function extractSegments(text) {
