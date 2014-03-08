@@ -34,6 +34,12 @@ function createDisplayHandler(displayElement, progressElement) {
     }
 
     function update() {
+        if (timedSegments.length === 0) {
+            progressElement.innerHTML = "";
+            display("");
+            return;
+        }
+
         display(timedSegments[pos][1]);
 
         var current = totalSeconds(pos),
@@ -44,7 +50,7 @@ function createDisplayHandler(displayElement, progressElement) {
     }
 
     function play() {
-        if (pos === timedSegments.length - 1) {
+        if (pos >= timedSegments.length - 1) {
             return;
         }
 
