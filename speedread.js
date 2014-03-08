@@ -49,10 +49,7 @@ var display = (function() {
     };
 }());
 
-var displayElement = document.getElementById("text-display"),
-    fullText = "",
-    segments = [];
-
+var displayElement = document.getElementById("text-display");
 display.setElement(displayElement);
 
 displayElement.onclick = function () {
@@ -64,15 +61,24 @@ displayElement.onclick = function () {
 }
 
 function loadText() {
-    fullText = document.getElementById("text-input").value;
-    segments = fullText.split(/\s/);
-    timedSegments = [];
+    var fullText = document.getElementById("text-input").value,
+        segments = extractSegments(fullText),
+        timedSegments = calculateDelays(segments);
+
+    display.load(timedSegments);
+}
+
+function extractSegments(text) {
+    return text.split(/\s/);
+}
+
+function calculateDelays(segments) {
+    var timedSegments = [];
     for (var i in segments) {
         var segment = segments[i];
         timedSegments.push([100, segment]);
     }
-
-    display.load(timedSegments);
+    return timedSegments;
 }
 
 function updateButtons(stopState, continueState) {
