@@ -1,14 +1,46 @@
-function createDisplayHandler(element) {
+function formatSeconds(seconds) {
+    if (seconds < 60) {
+        return seconds + "s";
+    }
+
+    var minutes = Math.floor(seconds / 60 % 60);
+    if (seconds < 60 * 60) {
+        return minutes + "m " + seconds % 60 + "s";
+    }
+
+    var hours = Math.floor(seconds / 3600);
+    return hours + "h " + minutes + "m " + seconds % 60 + "s";
+}
+
+function createDisplayHandler(displayElement, progressElement) {
     var timedSegments = [],
         pos = 0,
         timeoutId = 0;
 
+    function totalSeconds(maxIndex) {
+        var totalMilliseconds = 0;
+        for (var i in timedSegments) {
+            totalMilliseconds += timedSegments[i][0];
+
+            if (maxIndex !== undefined && i == maxIndex) {
+                break;
+            }
+        }
+        return Math.round(totalMilliseconds / 1000);
+    }
+
     function display(text) {
-        element.innerHTML = text;
+        displayElement.innerHTML = text;
     }
 
     function update() {
         display(timedSegments[pos][1]);
+
+        var current = totalSeconds(pos),
+            total = totalSeconds(),
+            percent = Math.floor(100 * current / total);
+
+        progressElement.innerHTML = formatSeconds(total) + " (" + percent + "%)";
     }
 
     function play() {
@@ -45,10 +77,11 @@ function createDisplayHandler(element) {
 };
 
 var displayElement = document.getElementById("text-display"),
-    speedInputElement = document.getElementById("speed-input");
+    progressElement = document.getElementById("progress"),
+    speedInputElement = document.getElementById("speed-input"),
+    textInputElement = document.getElementById("text-input");
 
-var textInputElement = document.getElementById("text-input"),
-    display = createDisplayHandler(displayElement),
+var display = createDisplayHandler(displayElement, progressElement),
     defaultDelay = 200;
 
 speedInputElement.value = 60 * 1000 / defaultDelay;
