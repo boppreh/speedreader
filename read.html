@@ -8,7 +8,8 @@
         <style media="screen" type="text/css">
 #text-display {
     background: white;
-    width: auto;
+    width: 200px;
+    margin: 50px auto 10px auto;
     height: 1.5em;
     font: 22px Tahoma;
     text-align: center;
@@ -27,22 +28,12 @@
 }
 
 #load-button {
-    width: 100px;
-    margin-left: 5%;
-}
-
-#controls {
-    width: 200px;
-    margin: 50px auto 10px auto;
+    width: 150px;
 }
         </style>
     </head>
     <body style='background: black;'>
-        <div id="controls">
-            <div id="text-display"></div>
-            <button id="start-button" onclick="displayer.start()" disabled="true">Start</button>
-            <button id="pause-continue-button" onclick="displayer.pauseContinue()" disabled="true">Continue</button>
-        </div>
+        <div id="text-display"></div>
 
         <div id="config">
             <textarea id="text-input">
@@ -60,101 +51,9 @@ Getting a visa
 
 Visas are required to enter Cambodia. You can obtain one on arrival at Siem Reap International Airport for $20, and 1 passport photo is required per person. You will also need another passport photo for the Angkor Temple Entrance Pass. Please ensure you take comfortable walking shoes, light clothing and plenty of water to drink as it is very hot there. The most commonly accepted currency in Cambodia is the US dollar.
             </textarea>
-            <input type="range" name="points" min="1" max="10">
             <button id="load-button" onclick="loadText()">Load text</button>
         </div>
 
-        <script>
-
-var displayer = (function () {
-    var currentTimeoutId = 0,
-        currentIndex = 0,
-        currentPairs = [];
-
-    function display(text) {
-        console.log("Displaying:", text);
-        document.getElementById("text-display").innerHTML = text;
-    }
-
-    function displayCurrent() {
-        display(currentPairs[currentIndex][0]);
-        updateButtons();
-    }
-
-    function displayNext() {
-        currentIndex += 1;
-
-        if (currentIndex >= currentPairs.length) {
-            display("&nbsp;");
-        } else {
-            displayCurrent();
-        }
-    }
-
-    function play() {
-        stop();
-        currentTimeoutId = setTimeout(play, currentPairs[currentIndex][1]);
-        displayNext();
-    }
-
-    function stop() {
-        clearTimeout(currentTimeoutId);
-        currentTimeoutId = 0;
-        updateButtons();
-    }
-
-    function updateButtons() {
-        var startButton = document.getElementById("start-button"),
-            continueButton = document.getElementById("pause-continue-button");
-
-        startButton.disabled = currentPairs.length === 0;
-        continueButton.disabled = currentPairs.length === 0 || currentIndex === 0;
-        continueButton.innerText = isPlaying() ? "Pause" : "Continue";
-    }
-
-    function startReading() {
-        currentIndex = 0;
-        play();
-    }
-
-    function isPlaying() {
-        return currentTimeoutId !== 0;
-    }
-
-    function read(wordDelayPairs) {
-        currentPairs = wordDelayPairs;
-        stop();
-        displayCurrent();
-    }
-
-    return {read: read,
-            start: startReading,
-            isPlaying: isPlaying,
-            pauseContinue: function () {
-                if (isPlaying()) {
-                    stop();
-                } else {
-                    play();
-                }
-            },
-    };
-}());
-
-function loadText() {
-    var pairs = [] 
-        words = document.getElementById("text-input").value.split(/\s/);
-
-    for (var i in words) {
-        var word = words[i],
-            delay = 150;
-
-        if (word != "") {
-            pairs.push([word, delay]);
-        }
-    }
-
-    displayer.read(pairs);
-}
-        </script>
+        <script type='text/javascript' src='speedread.js'></script>
     </body>
 </html>
