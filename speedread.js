@@ -90,7 +90,7 @@ function calculateDelays(segments) {
             delayMultiplier = 2;
 
         // Acronyms.
-        } else if (segment == segment.toUpperCase()) {
+        } else if (segment.length > 1 && segment == segment.toUpperCase()) {
             delayMultiplier = 3;
 
         // Contains extra punctuation.
