@@ -65,6 +65,10 @@ function loadText() {
 }
 
 function extractSegments(text) {
+    // Add extra space after sentences to create empty segment.
+    text = text.replace('. ', '.  ');
+    // Same for linebreaks.
+    text = text.replace('\n', '  ');
     return text.split(/\s/);
 }
 
