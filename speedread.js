@@ -99,6 +99,7 @@ function loadText() {
         segments = extractSegments(fullText),
         timedSegments = calculateDelays(segments);
 
+    display.stop();
     display.load(timedSegments);
     defaultDelay = 60 * 1000 / speedInputElement.value;
 }
