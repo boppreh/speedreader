@@ -1,6 +1,5 @@
-var display = (function() {
-    var element = null,
-        timedSegments = [],
+function createDisplayHandler(element) {
+    var timedSegments = [],
         pos = 0,
         timeoutId = 0;
 
@@ -21,10 +20,6 @@ var display = (function() {
     }
 
     return {
-        setElement: function (newElement) {
-            element = newElement; 
-        },
-
         load: function (newTimedSegments) {
             timedSegments = newTimedSegments;
             pos = 0;
@@ -49,8 +44,9 @@ var display = (function() {
     };
 }());
 
-var displayElement = document.getElementById("text-display");
-display.setElement(displayElement);
+var displayElement = document.getElementById("text-display"),
+    textInputElement = document.getElementById("text-input"),
+    display = createDisplayHandler(displayElement);
 
 displayElement.onclick = function () {
     if (display.isPlaying()) {
@@ -61,7 +57,7 @@ displayElement.onclick = function () {
 }
 
 function loadText() {
-    var fullText = document.getElementById("text-input").value,
+    var fullText = textInputElement.value,
         segments = extractSegments(fullText),
         timedSegments = calculateDelays(segments);
 
@@ -79,9 +75,4 @@ function calculateDelays(segments) {
         timedSegments.push([100, segment]);
     }
     return timedSegments;
-}
-
-function updateButtons(stopState, continueState) {
-    document.getElementById("stop-button").disabled = stopState;
-    document.getElementById("continue-button").disabled = continueState;
 }
