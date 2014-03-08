@@ -44,6 +44,8 @@ function createDisplayHandler(element) {
     };
 };
 
+var DEFAULT_DELAY = 200;
+
 var displayElement = document.getElementById("text-display"),
     textInputElement = document.getElementById("text-input"),
     display = createDisplayHandler(displayElement);
@@ -75,8 +77,25 @@ function extractSegments(text) {
 function calculateDelays(segments) {
     var timedSegments = [];
     for (var i in segments) {
-        var segment = segments[i];
-        timedSegments.push([100, segment]);
+        var segment = segments[i],
+            delayMultiplier = 1;
+
+        // Space after sentences.
+        if (segment == "") {
+            delayMultiplier = 2;
+
+        // Acronyms.
+        } else if (segment == segment.toUpperCase()) {
+            delayMultiplier = 3;
+
+        // Contains extra punctuation.
+        } else if (!segment.match(/^\w+$/)) {
+            delayMultiplier = 2;
+
+        }
+
+        var delay = DEFAULT_DELAY * delayMultiplier;
+        timedSegments.push([delay, segment]);
     }
     return timedSegments;
 }
