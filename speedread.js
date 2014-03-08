@@ -98,6 +98,11 @@ displayElement.onclick = function () {
     }
 }
 
+displayElement.ondblclick = function () {
+    display.seek(0);
+    display.stop();
+}
+
 function loadText() {
     defaultDelay = 60 * 1000 / speedInputElement.value;
 
