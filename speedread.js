@@ -44,9 +44,10 @@ function createDisplayHandler(displayElement, progressElement) {
 
         var current = totalSeconds(pos),
             total = totalSeconds(),
-            percent = Math.floor(100 * current / total);
+            percent = Math.floor(100 * current / total),
+            wpm = Math.round(60 * timedSegments.length / total);
 
-        progressElement.innerHTML = formatSeconds(total) + " (" + percent + "%)";
+        progressElement.innerHTML = formatSeconds(total) + " (" + percent + "%, " + wpm + "wpm)";
     }
 
     function play() {
@@ -129,6 +130,25 @@ function extractSegments(text) {
     return text.split(/\s/);
 }
 
+function getFrequencyMultiplier(segment) {
+    var language = document.querySelector('input[name="language"]:checked').value;
+    if (language !== 'english') {
+        return 1;
+    }
+
+    var match = segment.match(/\w+/);
+    if (match) {
+        var word = match[0],
+            frequency = wordFrequency[word.toLowerCase()];
+
+        if (frequency) {
+            return 2 / Math.log(Math.log(frequency));
+        }
+    }
+
+    return 1;
+}
+
 function calculateDelays(segments) {
     var timedSegments = [];
     for (var i in segments) {
@@ -153,17 +173,8 @@ function calculateDelays(segments) {
 
         }
 
-        var match = segment.match(/\w+/);
-        if (match) {
-            var word = match[0],
-                frequency = wordFrequency[word.toLowerCase()];
-
-            if (frequency) {
-                delayMultiplier = delayMultiplier * 2 / Math.log(Math.log(frequency));
-            }
-        }
-
-        var delay = defaultDelay * delayMultiplier;
+        var frequencyMultiplier = getFrequencyMultiplier(segment),
+            delay = defaultDelay * delayMultiplier * frequencyMultiplier;
         timedSegments.push([delay, segment]);
     }
     return timedSegments;
@@ -172,6 +183,10 @@ function calculateDelays(segments) {
 var client = new XMLHttpRequest();
 client.open('GET', 'frequent_words.txt');
 client.onreadystatechange = function() {
+    if (client.readyState < 4) {
+        return;
+    }
+
     var text = client.responseText,
         regex = /(\w+)\s(\d+)/g,
         match = regex.exec(text);
