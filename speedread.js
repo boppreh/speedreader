@@ -176,7 +176,6 @@ function calculateDelays(segments) {
         // Multiplier according to word frequency. More common = quicker.
         } else {
             delayMultiplier = getFrequencyMultiplier(segment);
-            console.log(segment, delayMultiplier);
 
         }
 
