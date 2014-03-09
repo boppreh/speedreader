@@ -139,10 +139,10 @@ function getFrequencyMultiplier(segment) {
     var match = segment.match(/\w+/);
     if (match) {
         var word = match[0],
-            frequency = wordFrequency[word.toLowerCase()];
+            frequency = wordFrequency[word.toLowerCase()] || 1;
 
         if (frequency) {
-            return 2 / Math.log(Math.log(frequency));
+            return 20 / Math.max(Math.log2(frequency), 1);
         }
     }
 
@@ -171,10 +171,14 @@ function calculateDelays(segments) {
         } else if (!segment.match(/^\w+$/)) {
             delayMultiplier = 2;
 
+        // Multiplier according to word frequency. More common = quicker.
+        } else {
+            delayMultiplier = getFrequencyMultiplier(segment);
+            console.log(segment, delayMultiplier);
+
         }
 
-        var frequencyMultiplier = getFrequencyMultiplier(segment),
-            delay = defaultDelay * delayMultiplier * frequencyMultiplier;
+        var delay = defaultDelay * delayMultiplier;
         timedSegments.push([delay, segment]);
     }
     return timedSegments;
