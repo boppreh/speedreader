@@ -1,3 +1,5 @@
+"use strict";
+
 function formatSeconds(seconds) {
     if (seconds < 60) {
         return seconds + "s";
