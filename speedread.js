@@ -92,7 +92,8 @@ var displayElement = document.getElementById("text-display"),
     textInputElement = document.getElementById("text-input");
 
 var display = createDisplayHandler(displayElement, progressElement),
-    defaultDelay = 200;
+    defaultDelay = 200,
+    wordFrequency = {};
 
 speedInputElement.value = 60 * 1000 / defaultDelay;
 
@@ -142,10 +143,24 @@ function calculateDelays(segments) {
         } else if (segment.length > 1 && segment == segment.toUpperCase()) {
             delayMultiplier = 3;
 
+        // Numbers are important and hard to read.
+        } else if (segment.match(/^\d+$/)) {
+            delayMultiplier = 2;
+
         // Contains extra punctuation.
         } else if (!segment.match(/^\w+$/)) {
             delayMultiplier = 2;
 
+        }
+
+        var match = segment.match(/\w+/);
+        if (match) {
+            var word = match[0],
+                frequency = wordFrequency[word.toLowerCase()];
+
+            if (frequency) {
+                delayMultiplier = delayMultiplier * 2 / Math.log(Math.log(frequency));
+            }
         }
 
         var delay = defaultDelay * delayMultiplier;
@@ -153,3 +168,17 @@ function calculateDelays(segments) {
     }
     return timedSegments;
 }
+
+var client = new XMLHttpRequest();
+client.open('GET', 'frequent_words.txt');
+client.onreadystatechange = function() {
+    var text = client.responseText,
+        regex = /(\w+)\s(\d+)/g,
+        match = regex.exec(text);
+
+    while (match != null) {
+        wordFrequency[match[1]] = Number(match[2]);
+        match = regex.exec(text);
+    }
+}
+client.send();
